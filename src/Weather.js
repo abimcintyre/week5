@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import DateTime from "./DateTime";
 import axios from "axios";
 import "./Weather.css";
+import WeatherInfo from "./WeatherInfo";
 
 export default function Weather(props) {
-  const [ready, setReady] = useState(false);
-  const [weatherData, setWeatherData] = useState({});
-  const [city, setCity] = useState(props.city);
+  const [weatherData, setWeatherData] = useState({ ready: false });
+  const [city, setCity] = useState(props.defaultCity);
   function handleResponse(response) {
     setWeatherData({
+      ready: true,
       temperature: response.data.main.temp,
       wind: response.data.wind.speed,
       city: response.data.name,
@@ -17,12 +17,10 @@ export default function Weather(props) {
       image: "https://ssl.gstatic.com/onebox/weather/64/cloudy.png",
       date: new Date(response.data.dt * 1000),
     });
-
-    setReady(true);
   }
 
   function search() {
-    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=702f59106bcb904df4e9eeb238089676&units=metric`;
+    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=7cdcd2de576fe8ae8ab5b57bd46a838f&units=metric`;
     axios.get(apiUrl).then(handleResponse);
   }
 
@@ -35,7 +33,7 @@ export default function Weather(props) {
     setCity(event.target.value);
   }
 
-  if (ready) {
+  if (weatherData.ready) {
     return (
       <div className="Weather">
         <form onSubmit={handleSubmit}>
@@ -57,31 +55,7 @@ export default function Weather(props) {
             </div>
           </div>
         </form>
-
-        <h2>{weatherData.city}</h2>
-        <ul>
-          <li>
-            <DateTime date={weatherData.date} />
-          </li>
-          <li className="text-capitalize">{weatherData.description}</li>
-        </ul>
-        <div className="row">
-          <div className="col-6">
-            <img src={weatherData.image} alt={weatherData.description} />
-            <span className="temp">{Math.round(weatherData.temperature)}</span>
-            °C
-          </div>
-          <div className="col-6">
-            <ul>
-              <li>
-                <strong>Humidity:</strong> {weatherData.humidity}%
-              </li>
-              <li>
-                <strong>Wind:</strong> {Math.round(weatherData.wind)}km/h
-              </li>
-            </ul>
-          </div>
-        </div>
+        <WeatherInfo data={weatherData} />
       </div>
     );
   } else {
