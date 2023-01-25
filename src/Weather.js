@@ -3,9 +3,10 @@ import DateTime from "./DateTime";
 import axios from "axios";
 import "./Weather.css";
 
-export default function Weather() {
+export default function Weather(props) {
   const [ready, setReady] = useState(false);
   const [weatherData, setWeatherData] = useState({});
+  const [city, setCity] = useState(props.city);
   function handleResponse(response) {
     setWeatherData({
       temperature: response.data.main.temp,
@@ -20,16 +21,31 @@ export default function Weather() {
     setReady(true);
   }
 
+  function search() {
+    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=702f59106bcb904df4e9eeb238089676&units=metric`;
+    axios.get(apiUrl).then(handleResponse);
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    search();
+  }
+
+  function handleCityChange(event) {
+    setCity(event.target.value);
+  }
+
   if (ready) {
     return (
       <div className="Weather">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="row">
             <div className="col-9">
               <input
                 type="search"
                 placeholder="Search a city..."
                 className="form-control"
+                onChange={handleCityChange}
               />
             </div>
             <div className="col-3">
@@ -69,9 +85,7 @@ export default function Weather() {
       </div>
     );
   } else {
-    let city = "Japan";
-    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=702f59106bcb904df4e9eeb238089676&units=metric`;
-    axios.get(apiUrl).then(handleResponse);
+    search();
     return "Loading...";
   }
 }
