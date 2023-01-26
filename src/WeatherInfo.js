@@ -1,5 +1,6 @@
 import React from "react";
 import DateTime from "./DateTime";
+import WeatherTemperature from "./WeatherTemperature";
 
 export default function WeatherInfo(props) {
   return (
@@ -14,8 +15,7 @@ export default function WeatherInfo(props) {
       <div className="row">
         <div className="col-6">
           <img src={props.data.image} alt={props.data.description} />
-          <span className="temp">{Math.round(props.data.temperature)}</span>
-          °C
+          <WeatherTemperature celsius={props.data.temperature} />
         </div>
         <div className="col-6">
           <ul>
